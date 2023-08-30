@@ -1,0 +1,6 @@
+mysql:
+  url:       ${MYSQL_HOST}  #127.0.0.1
+  port:      ${MYSQL_PORT}  #3306
+  userName:  ${MYSQL_USER} #your_mysql_userName
+  password:  ${MYSQL_PASSWORD}   #your_mysql_passWord
+  dbname: titok
