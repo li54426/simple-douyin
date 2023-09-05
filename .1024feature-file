@@ -56,3 +56,13 @@ fileChangeLogs:
   - test/social_api_test.go
   - '1'
   - controller/token.go
+  - test/token_test.go
+  - test/dao_test.go
+  - public/1_mmexport1692111641344.mp4
+  - public/1_mmexport1692111641344.jpeg
+  - controller/controller.go
+  - test/controllerdao_test.go
+  - dao.md
+  - public/0_20230329_133339.mp4
+  - public/0_20230329_133339.jpeg
+  - service/video.go

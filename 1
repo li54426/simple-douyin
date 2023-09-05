@@ -1,4 +1,4 @@
-{ pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import <nixpkgs-23.05> {} }: 
 pkgs.mkShell {
     shellHook = ''
         alias ll="ls -l"
@@ -10,9 +10,8 @@ pkgs.mkShell {
     '';
     packages = [
         # env
-        pkgs.go_1_17
-        pkgs.mysql57
-        pkgs.mongodb
+        pkgs.go
+        pkgs.mysql80
         pkgs.ffmpeg
         pkgs.minio
         pkgs.redis
