@@ -87,31 +87,29 @@ func (*UserDao) CheckUsernamePassword(username string, password string)(int64){
 
 
 /*
-*
-根据用户名，查找用户实体
+* 根据用户名，查找用户实体
 */
-func (*UserDao) GetUserByName(username string) (*User, error) {
+func (*UserDao) GetUserByName(username string) (User, error) {
 	user := User{Name: username}
 
 	result := SqlSession.Where("name = ?", username).First(&user)
 	err := result.Error
 	if err != nil {
-		return nil, err
+		return User{}, err
 	}
-	return &user, err
+	return user, err
 }
 
 /*
-*
-根据用户id，查找用户实体
+* 根据用户id，查找用户实体
 */
-func (d *UserDao) GetUserById(id int64) (*User, error) {
+func (d *UserDao) GetUserById(id int64) (User, error) {
 	user := User{UserId: id}
 
 	result := SqlSession.Where("user_id = ?", id).First(&user)
 	err := result.Error
 	if err != nil {
-		return nil, err
+		return User{}, err
 	}
-	return &user, err
+	return user, err
 }

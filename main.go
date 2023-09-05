@@ -2,7 +2,7 @@ package main
 
 import (
 	"simple-douyin/models"
-	"simple-douyin/service"
+	// "simple-douyin/service"
 	"github.com/gin-gonic/gin"
     //"fmt"
 )
@@ -15,7 +15,7 @@ import (
 
 
 func main() {
-	go service.RunMessageServer()
+	// go service.RunMessageServer()
 
 	// 初始化配置，如MySQL等
 	err := models.InitProject()
@@ -58,6 +58,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+    
 	defer models.Close()
 
 	r := gin.Default()

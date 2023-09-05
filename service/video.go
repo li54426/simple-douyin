@@ -6,6 +6,6 @@ import (
 
 // 服务端限制
 var limVideoNum = 30
-func VideoGet(lastTime string) []models.Video{
-    return models.GetVideoDao().QueryVideo(&lastTime, limVideoNum)
+func GetVideo(lastTime string) []models.Video{
+    return models.GetVideoDao().GetVideo(&lastTime, limVideoNum)
 }

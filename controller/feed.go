@@ -6,6 +6,7 @@ import (
 	"time"
     "strconv"
     "simple-douyin/service"
+    // "fmt"
 )
 
 type FeedResponse struct {
@@ -30,18 +31,24 @@ func Feed(c *gin.Context) {
 
     if lstTimeStr != "" {
         lstTimeNum , _ := strconv.ParseInt(lstTimeStr, 10, 64)
-
-        lstTime = time.Unix(lstTimeNum, 0).Format("2023-09-01 09:46:56")
+        lstTime = time.Unix(lstTimeNum, 0).Format("2006-01-02 15:04:05")
+        //fmt.Println("the time Num = ", lstTimeNum)
+         // fmt.Println("the time = ", lstTime)
     }
 
-    videoList:= service.VideoGet(lstTime)
+    videoListModel:= service.GetVideo(lstTime)
+    list := GetVideoList(videoListModel)
+
+    
+   // fmt.Print("%v", list)
+    
     
 
 
     
 	c.JSON(http.StatusOK, FeedResponse{
 		Response:  Response{StatusCode: 0},
-		VideoList: DemoVideos,
+		VideoList: list,
 		NextTime:  time.Now().Unix(),
 	})
 }

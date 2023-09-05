@@ -43,7 +43,40 @@ func GetUserById(id int64) (User, error){
 }
 
 
-func (con *UserController)GetUserByName(name string)(User, error){
+
+
+
+func GetVideoList(list []models.Video) []Video{
+    
+    
+    var res = make([]Video, len(list))
+    
+
+    
+    for i, v := range list {
+        author, _ := GetUserById(v.UserId)
+
+        
+        
+        res[i] = Video{
+            Id: v.VideoId,
+            Author:  author,
+            PlayUrl:       v.PlayUrl,
+			CoverUrl:      v.CoverUrl,
+			FavoriteCount: v.FavoriteCount,
+			CommentCount:  v.CommentCount,
+            IsFavorite: v.IsFavorite,
+            
+            
+        }
+    }
+    return res
+}
+
+
+
+
+func GetUserByName(name string)(User, error){
     userModel, err := models.GetUserDao().GetUserByName(name)
 
     if err != nil {
@@ -61,7 +94,7 @@ func (con *UserController)GetUserByName(name string)(User, error){
     
 }
 
-func (con *UserController)CreateUser(username string, password string)(int64, error){
+func CreateUser(username string, password string)(int64, error){
     userModel := models.User{
         Name: username,
         Password: password,
@@ -75,7 +108,7 @@ func (con *UserController)CreateUser(username string, password string)(int64, er
     return userId, nil
 }
 
-func (con *UserController)CheckUsernamePassword(username string, password string)(int64){
+func CheckUsernamePassword(username string, password string)(int64){
     return models.GetUserDao().CheckUsernamePassword(username, password)
 
 }
@@ -89,7 +122,7 @@ func (con *UserController)CheckUsernamePassword(username string, password string
 
 
 func GetVideoListById(userId int64, user *User)([]Video, error){
-        videoListModel, err := models.GetVideoDao().QueryVideoByUserId(userId)
+        videoListModel, err := models.GetVideoDao().GetVideoByUserId(userId)
 
     if err!= nil {
         return []Video{}, err
@@ -122,6 +155,9 @@ func GetVideoListById(userId int64, user *User)([]Video, error){
     
     
 }
+
+
+
 
 
 

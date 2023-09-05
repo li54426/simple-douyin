@@ -60,19 +60,19 @@ func (*VideoDao) CreateVideo(video *Video) (*Video, error) {
 *
 根据videoid，查找video实体
 */
-func (d *VideoDao) FindVideoById(id int64) (*Video, error) {
+func (d *VideoDao) GetVideoById(id int64) (Video, error) {
 	video := Video{VideoId: id}
 
 	result := SqlSession.Where("user_id = ?", id).First(&video)
 	err := result.Error
 	if err != nil {
-		return nil, err
+		return Video{}, err
 	}
-	return &video, err
+	return video, err
 }
 
 // 根据UserId，查出Video列表
-func (*VideoDao) QueryVideoByUserId(userId int64) ([]Video, error) {
+func (*VideoDao) GetVideoByUserId(userId int64) ([]Video, error) {
 	var videos []Video
 	err := SqlSession.Where("user_id = ?", userId).Find(&videos).Error
 	if err != nil {
@@ -84,14 +84,14 @@ func (*VideoDao) QueryVideoByUserId(userId int64) ([]Video, error) {
 }
 
 // 根据时间和需要查询的条数，获取video列表
-func (*VideoDao) QueryVideo(date *string, limit int) []Video {
-	fmt.Println(*date)
-	var VideoList []*Video
+func (*VideoDao) GetVideo(date *string, limit int) []Video {
+	fmt.Println("date=", *date)
+	var VideoList = make([]Video, limit)
 	SqlSession.Where("create_at < ?", *date).Order("create_at desc").Find(&VideoList)
 	if len(VideoList) <= limit {
 		fmt.Println(VideoList)
 		return VideoList
 	}
 	// fmt.Println(VideoList)
-	return VideoList[0:limit]
+	return VideoList
 }

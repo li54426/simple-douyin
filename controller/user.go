@@ -1,11 +1,14 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	// "sync/atomic"
-    "simple-douyin/models"
-    "fmt"
+	// "fmt"
+	"simple-douyin/models"
+	"simple-douyin/service"
 )
 
 // usersLoginInfo use map to store user info, and key is username+password for demo
@@ -34,68 +37,58 @@ type UserResponse struct {
 	User User `json:"user"`
 }
 
+
+/**
+* handler 
+* 注册功能
+* 
+*/
 func Register(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
-
-	token, _ := GenerateToken(username)   //username + password
-
-    
-
     // 原本 的 usersLoginInfo[]代替了 数据库层
-    userModel, _ :=  models.GetUserDao().GetUserByName(username)
+    userId := service.CanRegister(username, password)
 
-    if userModel == nil {
-        userid, _ := models.GetUserDao().CreateUser(&models.User{
-            Name: username,
-            Password: password,
-        })
+    if userId == -1 {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 1, StatusMsg: "User already exist"},
+		})
+            
+    } else if userId == -2 {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 1, StatusMsg: "User creat fail"},
+		})
+        
+    }else {
+        token, _ := service.GenerateToken(username) 
         c.JSON(http.StatusOK, UserLoginResponse{
                 Response: Response{StatusCode: 0},
-                UserId:   userid,
+                UserId:   userId,
                 Token:    token,
         })
-            
     }
     
     
-    
-	// if _, exist := usersLoginInfo[token]; exist {
-	// 	c.JSON(http.StatusOK, UserLoginResponse{
-	// 		Response: Response{StatusCode: 1, StatusMsg: "User already exist"},
-	// 	})
-	// } else {
-	// 	atomic.AddInt64(&userIdSequence, 1)
-	// 	newUser := User{
-	// 		Id:   userIdSequence,
-	// 		Name: username,
-	// 	}
-	// 	usersLoginInfo[token] = newUser
-        
-	// 	c.JSON(http.StatusOK, UserLoginResponse{
-	// 		Response: Response{StatusCode: 0},
-	// 		UserId:   userIdSequence,
-	// 		Token:    username + password,
-	// 	})
-	// }
 }
 
 func Login(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
-    userid := models.GetUserDao().CheckUsernamePassword(username, password)
-
+    // userid := models.GetUserDao().CheckUsernamePassword(username, password)
+    userid := service.CanLogin(username, password)
+    
     if userid == -1 {
-        fmt.Println("uid==-1")
 	 	c.JSON(http.StatusOK, UserLoginResponse{
 	 		Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
         })
 
-        return
-    }else{
-        token, err :=  GenerateToken(username)
-    
+    }else if userid == -2{
+        c.JSON(http.StatusOK, UserLoginResponse{
+	 		Response: Response{StatusCode: 1, StatusMsg: "wrong password"},
+        })
+    }else {
+        token, err :=  service.GenerateToken(username)
         if err == nil {
             c.JSON(http.StatusOK, UserLoginResponse{
                    Response: Response{StatusCode: 0},
@@ -106,7 +99,7 @@ func Login(c *gin.Context) {
             c.JSON(http.StatusOK, UserLoginResponse{
                 Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
             })
-        }        
+        }  
     }
 
 
@@ -137,7 +130,7 @@ func Login(c *gin.Context) {
 func UserInfo(c *gin.Context) {
 	token := c.Query("token")
 
-    username,err := ParseToken(token)
+    username,err := service.ParseToken(token)
 
     if err != nil {
         c.JSON(http.StatusOK, UserResponse{

@@ -1,15 +1,16 @@
 package controller
 
 import (
-	"bytes"
+	// "bytes"
 	"fmt"
-	ffmpeg "github.com/u2takey/ffmpeg-go"
-	// "io"
-	"os"
+	// ffmpeg "github.com/u2takey/ffmpeg-go"
+    // "github.com/disintegration/imaging"
+	// "os"
 
    "simple-douyin/models"
+    "simple-douyin/service"
   // "time"
-	"github.com/disintegration/imaging"
+	
 
 	"github.com/gin-gonic/gin"
 	"strings"
@@ -22,42 +23,6 @@ import (
     
 )
 
-
-
-// ----------------------------TO DO------------------
-// 抽取某一帧作为图片
-func Vedio2Jpeg(inFileName string, frameNum int) {
-	buf := bytes.NewBuffer(nil)
-
-	// 使用 ffmpeg 命令行工具提取视频的指定帧作为 JPEG 图像
-	err := ffmpeg.Input(inFileName).
-		Filter("select", ffmpeg.Args{fmt.Sprintf("gte(n,%d)", frameNum)}).
-		Output("pipe:", ffmpeg.KwArgs{"vframes": 1, "format": "image2", "vcodec": "mjpeg"}).
-		WithOutput(buf, os.Stdout).
-		Run()
-
-	if err != nil {
-		panic(err)
-	}
-
-	img, err := imaging.Decode(buf)
-	if err != nil {
-		return
-	}
-
-	index := strings.LastIndex(inFileName, ".")
-	// var outFileName strings
-	if index != -1 {
-		outFileName := strings.Join([]string{inFileName[:index+1], "jpeg"}, "")
-    fmt.Print(outFileName)
-		err = imaging.Save(img, outFileName)
-		if err != nil {
-			return 
-		} else {
-			return
-		}
-	}
-}
 
 // 获得 域名 
 func getDomain(c *gin.Context) (string, error) {
@@ -75,7 +40,7 @@ func Publish(c *gin.Context) {
 	token := c.PostForm("token")
 
 	// 鉴权, var usersLoginInfo = map[string]User
-  user_name, err := ParseToken(token);
+  user_name, err := service.ParseToken(token);
 	// if  err != nil {
 
 	// 	c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
@@ -147,7 +112,7 @@ func Publish(c *gin.Context) {
 		return
 
 	}
-  Vedio2Jpeg(saveFile, 6)
+  service.Vedio2Jpeg(saveFile, 6)
   
 
 	video1 := models.Video{
@@ -173,21 +138,9 @@ func Publish(c *gin.Context) {
     }
   
 
-
-
     
 }
 
-// PublishList all users have same publish video list
-
-// func PublishList(c *gin.Context) {
-// 	c.JSON(http.StatusOK, VideoListResponse{
-// 		Response: Response{
-// 			StatusCode: 0,
-// 		},
-// 		VideoList: DemoVideos,
-// 	})
-// }
 
 type VideoListResponse struct {
 	Response
@@ -201,7 +154,7 @@ func PublishList(c *gin.Context) {
     //fmt.Println("start ")
 
     // fmt.Printf("token=%s\n", token)
-    _, err := ParseToken(token)
+    _, err := service.ParseToken(token)
     
     // 将user_id 转化为 十进制数
     userId, err := strconv.ParseInt(c.Query("user_id"), 10, 64)

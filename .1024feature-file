@@ -66,3 +66,9 @@ fileChangeLogs:
   - public/0_20230329_133339.mp4
   - public/0_20230329_133339.jpeg
   - service/video.go
+  - models/demo_data.go
+  - service/user.go
+  - service/token.go
+  - public/0_20230216_141811.mp4
+  - public/0_20230216_141811.jpeg
+  - service/publish.go
